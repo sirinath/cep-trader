@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary Sample application to show CEP-Engine, Persistence, Model Driven Architecture & Service Oriented Architecture
 
 = AlgoTrader Sample Application =
 
