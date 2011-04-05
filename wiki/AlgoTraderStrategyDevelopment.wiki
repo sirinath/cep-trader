@@ -1,0 +1,48 @@
+#summary Instructions on how to develop a strategy based on AlgoTrader
+
+= Introduction =
+
+The Trading Framework AlgoTrader facilitates a minimum effort development of trading strategies based on Esper Query Language (EQL).
+
+After backtesting, newly developed strategies can be tested in a live environment using Paper Trading Accounts. At the end of a thorough test procedure, the new strategy can be put into production. The following diagram shows the general procedure for developing new strategies:
+
+http://cep-trader.googlecode.com/files/AlgoTrader-Strategy_Development_Process.gif
+
+The system is developed by a Model Driven Architecture. All artifacts of the system are modeled in UML and generated into code by the [http://www.andromda.org/docs/index.html Framework AndroMDA].
+The system does not provide a GUI Frontend. Instead it uses Java Management Extension (JMX) for management in runtime.
+
+For Database Persistence the [http://www.hibernate.org/ Framework Hibernate] is used. All necessary information is recorded to the database in a statefull manner.
+
+The system is also based on the Java Enterprise Framework http://www.springsource.org/ Spring], which enables a very clean Service Oriented Architecture.
+
+= Platform requirements =
+
+For development of new Strategies the following minimum Platform requirements exist:
+
+|| *Software* || *URL* ||
+|| Eclipse IDE || http://www.eclipse.org ||
+|| Subversive SVN Client ||  http://www.eclipse.org/subversive ||
+|| MySql Database || http://www.mysql.com ||
+|| A database management tool (i.e. TOAD for MySql) || http://www.quest.com/toad-for-mysql  || 
+
+
+= Eclipse Projects =
+
+The framework AlgoTrader consists of at lease two Eclipse Projects:
+
+ * AlgoTraderLight (the base trading framework)
+ * AlgoTraderXXX (the strategy being developed)
+
+AlgoTraderLight has the following structure:
+
+|| *Directory* || *Description* ||
+|| src || Contains manually created source files ||
+|| target || Contains generated source files ||
+|| classes || Contains compiled class files ||
+|| lib || Contains Jar libraries ||
+|| bin || Contains startup batch files ||
+|| log || Contains log files ||
+|| results || Contains files which are created (i.e. copy of retrieved HTML code) or imported (i.e. Tick Data) into the system ||
+|| mda || Contains UML Model and AndroMDA configuration / customization files ||
+|| sql || Contains SQL scripts ||
+|| doc || Contains documentation in Text-File Format ||
