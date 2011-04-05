@@ -1,4 +1,4 @@
-#summary Instructions on how to develop a strategy based on AlgoTrader
+#summary Overall Documentation of the Framework AlgoTrader as well as instructions on how to build a strategy with it
 
 <wiki:toc max_depth="2" />
 
