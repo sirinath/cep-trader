@@ -138,6 +138,172 @@ As described earlier the database MySql is used by the system, even though by us
  
 To ensure referential integrity, foreign-key constraints are in place. The directory sql /AlgoTraderLight contains a script algotrader.sql to create the database.
 
+= Strategy Development =
+
+The following paragraph will give a short example based on a simple moving average strategy (with the Short Name MOV).
+
+A strategy is based on the following minimum artifacts:
+
+|| *Artifact* || *Description* ||
+|| /src || Source-File Directory containing necessary Java-Classes for the Strategy ||
+|| /lib || Directory containing Jar Files needed specifically for this Strategy ||
+|| /module-mov.epl || Esper Module containing the necessary Esper Statements ||
+|| /conf-mov.properties  || Contains parameters used by the strategy (i.e. Moving average durations etc.) ||
+|| /esper-mov.cfg.xml || Contains event-types, imports, variables and general Esper settings ||
+|| /beanRefFactorySimulation.xml || Spring Bean Reference Factory containing references to all Application Context Files ||
+|| /applicationContext-mov.xml || Application Context File for the strategy, mainly containing autowire instructions ||
+|| /results/tickdata/xxx || Directory containing Tick Data Files needed for Back Testing ||
+
+== MovServiceImpl.java ==
+
+This is the main Java-class containing Subscriber inner classes and Business Logic
+
+First we need references to services provided by the base framework:
+{{{
+private PositionService positionService;
+private LookupService lookupService;
+private TransactionService transactionService;
+
+public MovServiceImpl(PositionService positionService, LookupService lookupService,
+  TransactionService transactionService) {
+
+	this.positionService = positionService;
+	this.lookupService = lookupService;
+	this.transactionService = transactionService;
+}
+}}}
+
+These values will be auto injected on startup by the Springframework (based on applicationContext-mov.xml)
+
+Next we need an Esper Subscriber to react onto market signals. This can be coded as a separate class or as an inner class within MovServiceImpl.java
+{{{
+public static class OpenPositionSubscriber {
+	
+  public void update(String strategyName, int securityId, BigDecimal currentValue) {
+	
+
+    MovServiceImpl movService = ((MovServiceImpl)    
+      ServiceLocator.commonInstance().getService("movService"));
+
+    movService.openPosition(strategyName, securityId, currentValue);
+	
+  }
+}
+}}}
+The ServiceLocator will give as a reference to the “movService” (by the Springframework)
+
+Finally we need a business method to instruct the base framework to open a position:
+{{{
+public void openPosition(String strategyName, int securityId, BigDecimal currentValue) {
+
+  Strategy strategy = this.lookupService.getStrategyByNameFetched(strategyName);
+
+  int qty = (int) (strategy.getAvailableFundsDouble() / currentValue.doubleValue());
+	
+  if (qty <= 0) return;
+
+  OrderVO order = new OrderVO();
+  order.setStrategyName(strategyName);
+  order.setSecurityId(securityId);
+  order.setRequestedQuantity(qty);
+  order.setTransactionType(TransactionType.BUY);
+
+  this.transactionService.executeTransaction(strategy.getName(), order);
+	
+ // if a position was open and exitValue
+  Position position = this.lookupService.getPositionBySecurityAndStrategy(securityId, 
+    strategyName);
+
+  if (position != null && position.isOpen()) {
+    
+    double initialStopLoss = ConfigurationUtil.getStrategyConfig("MOV").   
+      getDouble("initialStopLoss");
+
+    double exitValue = initialStopLoss * currentValue.doubleValue();
+    this.positionService.setExitValue(position.getId(), exitValue, true);
+  }
+}
+}}}
+
+The method contains the following steps:
+ # We get a reference to the Strategy Entity by the LookpService. 
+ # Then we evaluate the quantity that we want to purchase (in this case we use all available funds). 
+ # Then we construct an Order Value Object (simple POJO object) containing the name of the strategy, the id of the security, the quantity and the transaction type.
+ # The TransactionService will then carry out the transaction for us.
+ # If a new position was created successfully, we want to set the initial stopLoss based on the current value and a constant initialStopLoss (which is configured inside conf-mov.properties)
+
+== module-mov.epl ==
+
+Next thing we have to develop is the Esper modul containing our statements. The module basically consists of the following three statements:
+
+{{{
+@Name('MOVING_AVERAGE')
+insert into Indicator
+select stat1.average - stat2.average as value
+from Tick(security.isin = underlayingIsin).win:length(movLengthFast).stat:uni(currentValueDouble) as stat1, 
+Tick(security.isin = underlayingIsin).win:length(movLengthSlow).stat:uni(currentValueDouble) as stat2
+where stat2.datapoints = movLengthSlow;
+}}}
+This statement creates a Moving Average Indicator using the stat:uni Window
+
+{{{
+@Name('OPEN_POSITION')
+@Tag(name='subscriber', value='com.algoTrader.service.mov.MovServiceImpl$OpenPositionSubscriber')
+select
+engineStrategy.name as strategyName, 
+indexTick.security.id as underlayingid,
+indexTick.currentValue as underlayingSpot
+from pattern [every (indexTick=Tick(security.isin=underlayingIsin) -> indicator=Indicator)]
+where indicator.value > 0
+and prior(1, indicator.value) <= 0;
+}}}
+This statement calls the OpenPositionSubscriber whenever we have a crossover on the indicators. The Tag 'subscriber' is used to instruct the RuleService to attach the 'OpenPositionSubscriber' to this statement.
+
+{{{
+@Name('CREATE_EXIT_VALUE')
+@Tag(name='subscriber', value='com.algoTrader.service.PositionServiceImpl$SetExitValueSubscriber')
+select position.id as positionId,
+exitValue.value as value
+from Tick as tick,
+method:LookupUtil.getPositions(tick.security) as position,
+method:MovUtil.getExitValue(position.strategy.name, tick.security, tick.currentValueDouble) as exitValue
+where exitValue.value > position.exitValue
+and position.quantity != 0;
+}}}
+This statement is responsible to increase the trailing stop-loss whenever the underlaying moves up. It uses the LookupUtil (configured within esper-mov.cfg.xml) to get all currently open positions and the MovUtil to actually calculate the exitValue. The statement uses the configured 'SetExitValueSubscriber'. 
+
+Note: The strategy does not have to close the position whenever the exitValue is reached. This is carried out automatically by the PositionService.
+
+== conf-mov.properties ==
+
+Now we need the configuration file, which contains the necessary parameters for the strategy:
+{{{
+underlayingIsin = CH0008616382
+movLengthFast = 1000
+movLengthSlow = 2000
+initialStopLoss = 0.99
+stopLoss = 0.97
+}}}
+In our case it is just the isin of the security that we are using, the length of our two moving average indicators and the initialStopLoss level as well as the trailing stopLoss level.
+
+== esper-mov.cfg.xml ==
+
+The esper configuration file consists of the following main parts:
+{{{
+<auto-import import-name="com.algoTrader.util.LookupUtil"/>
+<auto-import import-name="com.algoTrader.service.mov.MovUtil"/>
+
+<variable name="engineStrategy" type="com.algoTrader.entity.Strategy"/>
+<variable name="underlayingIsin" type="String"/>
+<variable name="movLengthFast" type="int"/>
+<variable name="movLengthSlow" type="int"/>
+}}}
+First the two Util-Classes LookupUtil and MovUtil have to be configured. The necessary variables as well as their type are configured. 
+
+Note: the actual values for the variables are taken from conf-mov.properties. 
+
+The variable engineStrategy gets populated automatically by the RuleService and contains a reference to the Strategy-Entity we are using.
+
 = Tick Data Format = 
 
 The Format of the Tick Data Files in use is based on a standard CSV Structure:
