@@ -1,5 +1,7 @@
 #summary Instructions on how to develop a strategy based on AlgoTrader
 
+<wiki:toc max_depth="2" />
+
 = Introduction =
 
 The Trading Framework AlgoTrader facilitates a minimum effort development of trading strategies based on Esper Query Language (EQL).
@@ -13,7 +15,7 @@ The system does not provide a GUI Frontend. Instead it uses Java Management Exte
 
 For Database Persistence the [http://www.hibernate.org/ Framework Hibernate] is used. All necessary information is recorded to the database in a statefull manner.
 
-The system is also based on the Java Enterprise Framework http://www.springsource.org/ Spring], which enables a very clean Service Oriented Architecture.
+The system is also based on the Java Enterprise Framework [http://www.springsource.org/ Springframework], which enables a very clean Service Oriented Architecture.
 
 = Architecture =
 
@@ -38,7 +40,7 @@ For development of new Strategies the following minimum Platform requirements ex
 <BR>
 = Eclipse Projects =
 
-The framework AlgoTrader consists of at lease two Eclipse Projects:
+The framework AlgoTrader consists of at least two Eclipse Projects:
 
  * AlgoTraderLight (the base trading framework)
  * AlgoTraderXXX (the strategy being developed)
@@ -53,7 +55,7 @@ AlgoTraderLight has the following structure:
 || bin || Contains startup batch files ||
 || log || Contains log files ||
 || results || Contains files which are created (i.e. copy of retrieved HTML code) or imported (i.e. Tick Data) into the system ||
-|| mda || Contains UML Model and AndroMDA configuration / customization files (available at a later stage, when AndroMDA is setup)||
+|| mda || Contains UML Model and AndroMDA configuration / customization files||
 || sql || Contains SQL scripts ||
 || doc || Contains documentation in Text-File Format ||
 
@@ -69,7 +71,7 @@ The Strategy Project AlgoTraderXXX has the following structure:
 <BR>
 = UML Model =
 
-The UML Model in use by the system is shown within [http://cep-trader.googlecode.com/files/AlgoTrader.pdf AlgoTrader UML Model]
+The UML Model in use by the system is shown here: [http://cep-trader.googlecode.com/files/AlgoTrader.pdf AlgoTrader UML Model]
 
 = Java Packages =
 
@@ -78,12 +80,11 @@ The following table gives an overview of the provided java packages:
 || *Package* || *Description* ||
 || com.algoTrader || ServiceLocators ||
 || com.algoTrader.entity || Entities and corresponding Hibernate DataAccessObjects ||
-|| com.algoTrader.service || Contains all Services. Broker specific implementation services are placed in sub-packages ||
+|| com.algoTrader.service || Contains all Spring Services  ||
 || com.algoTrader.starter || Startup-Classes as well as a generic ServiceInvoker ||
 || com.algoTrader.subscriber || Esper Statement Subscribers ||
 || com.algoTrader.util || General Utility methods ||
 || com.algoTrader.util.io || CSV Adapters for Tick data as well as Tick data conversion functions ||
-|| com.espertech.* || Modified Esper Classes ||
 
 <BR>
 = Esper Engine =
@@ -113,7 +114,7 @@ Listeners or Subscribers which correspond to a particular Service are commonly i
 
 == Trading Framework Modules ==
 
-The Trading Framework contains only one module called module-base.epl. It contains Esper Statements to fulfill the following tasks:
+The Trading Framework contains only one module called module-base.epl with Esper Statements to fulfill the following tasks:
 
  * Evaluation and Logging of the Portfolio Values at certain intervals
  * Position handling (i.e. close position when exit level is reached, etc.)
@@ -304,42 +305,6 @@ Note: the actual values for the variables are taken from conf-mov.properties.
 
 The variable engineStrategy gets populated automatically by the RuleService and contains a reference to the Strategy-Entity we are using.
 
-= Tick Data Format = 
-
-The Format of the Tick Data Files in use is based on a standard CSV Structure:
-
- * dateTime
- * last
- * lastDateTime
- * volBid
- * volAsk
- * bid
- * ask
- * vol
- * openIntrest
- * settlement
-
-The first line within the file is the header row. DateTime and LastDateTime are of type long and represent milliseconds since 1970. 
-
-Example:
-
-|| dateTime || last || lastDateTime || volBid || volAsk || bid || ask || vol || openIntrest || settlement ||
-|| 1299493621002 || 188 || 1299491709000 || 47 || 52 || 178.1 || 183.2 || 20 || 868 || 187  ||
-|| 1299493680524 || 188 || 1299491709000 || 47 || 52 || 177.2 || 182.9 || 20 || 868 || 187 || 
-
-<BR>
-= Configuration  = 
-
-Configuration is done using the [http://commons.apache.org/configuration Apache Commons Configuration Library].  For the trading framework as well as for each strategy one configuration file exists. The file conf-base.properties is the configuration file for the trading framework. It contains configuration values for the following areas:
-
- * Dabase Access
- * Simulation Parameters
- * Execution Parameters
- * Broker specific Parameters 
-
-Using {{{org.apache.commons.configuration.CompositeConfiguration}}} configuration parameters can also be provided as a VM argument when starting up the system.
-
-The configuration files are also used to define values for Esper variables. Because the Esper Variable system is strong typed, variables have to be configured within the corresponding Esper configuration files.
 
 = Back Testing =
 
@@ -347,9 +312,9 @@ The System can be run in Back Testing / Simulation mode by setting the following
 
 {{{simulation = true}}}
 
-In simulation mode the trading framework as well as all strategies marked as autoActivate in the database table strategy are started inside the same JVM.
+In simulation mode the trading framework as well as all strategies marked as autoActivate (in the database table strategy) are started inside the same JVM.
 
-The symboles specified within the table watchers2watchlist are fed to the Esper engine instances using the {{{com.espertech.esperio.AdapterCoordinatorImpl}} and {{{com.espertech.esperio.csv.CSVInputAdapter}}}. The CSV files containing the relevant tickdata should be placed in a subdirectory of {{{/AlgoTraderXXX/results/tickdata/}}}. This subdirectory has to be specified in the file conf-base.properties or as a VM argument as follows:
+The symboles specified within the table watchers2watchlist are fed to the Esper engine instances using the {{{com.espertech.esperio.AdapterCoordinatorImpl}}} and {{{com.espertech.esperio.csv.CSVInputAdapter}}}. The CSV files containing the relevant tickdata should be placed in a subdirectory of {{{/AlgoTraderXXX/results/tickdata/}}}. This subdirectory has to be specified in the file conf-base.properties or as a VM argument as follows:
 
 {{{dataSource.dataSet = current}}}
 
@@ -369,3 +334,40 @@ maxDrawDownM=6.77% bestMonthlyPerformance=13.09% maxDrawDown=24.84% maxDrawDownP
 }}}
 
 Before each simulation run, the database is reset to its original state. After the simulation the database modifications (mainly transactions and positions) are kept, in order to be able to perform further DB based analysis.
+
+= Tick Data Format = 
+
+The Format of the Tick Data Files in use is based on a standard CSV Structure:
+
+ * dateTime
+ * last
+ * lastDateTime
+ * volBid
+ * volAsk
+ * bid
+ * ask
+ * vol
+ * openIntrest
+ * settlement
+
+The first line within the file is the header row. DateTime and LastDateTime are of type long and represent milliseconds since 1970. 
+
+Example:
+
+|| *dateTime* || *last* || *lastDateTime* || *volBid* || *volAsk* || *bid* || *ask* || *vol* || *openIntrest* || *settlement* ||
+|| 1299493621002 || 188 || 1299491709000 || 47 || 52 || 178.1 || 183.2 || 20 || 868 || 187  ||
+|| 1299493680524 || 188 || 1299491709000 || 47 || 52 || 177.2 || 182.9 || 20 || 868 || 187 || 
+
+<BR>
+= Configuration  = 
+
+Configuration is done using the [http://commons.apache.org/configuration Apache Commons Configuration Library].  For the trading framework as well as for each strategy one configuration file exists. The file conf-base.properties is the configuration file for the trading framework. It contains configuration values for the following areas:
+
+ * Dabase Access
+ * Simulation Parameters
+ * Execution Parameters
+ * Broker specific Parameters 
+
+Using {{{org.apache.commons.configuration.CompositeConfiguration}}} configuration parameters can also be provided as a VM argument when starting up the system.
+
+The configuration files are also used to define values for Esper variables. Because the Esper Variable system is strong typed, variables have to be configured within the corresponding Esper configuration files.
