@@ -15,6 +15,16 @@ For Database Persistence the [http://www.hibernate.org/ Framework Hibernate] is 
 
 The system is also based on the Java Enterprise Framework http://www.springsource.org/ Spring], which enables a very clean Service Oriented Architecture.
 
+= Architecture =
+
+The System is basically composed of two layers.
+
+The Trading Framework layer is the base for all strategies running on top of it. It is responsible for persistence to the database. It holds the connection to the Broker Interfaces to retrieve live market data as well as placing orders and tracking executions. The Trading Framework is also responsible for Risk Management, Portfolio Management, Performance Evaluation and Margining. For many of its tasks the Trading Framework uses a contained Esper Engine Instance.
+
+On top of the Trading Framework any number of Strategies can be installed. Each strategy runs in its own process. Each Strategy contains its own Esper Engine Instance. A Strategy can use any type and number of Technical Indicators to evaluate trend and to retrieve market signals. Orders are delegated to the underlying Trading Framework for execution.
+
+http://cep-trader.googlecode.com/files/AlgoTrader-Architecture_Layers.gif
+
 = Platform requirements =
 
 For development of new Strategies the following minimum Platform requirements exist:
@@ -25,7 +35,7 @@ For development of new Strategies the following minimum Platform requirements ex
 || MySql Database || http://www.mysql.com ||
 || A database management tool (i.e. TOAD for MySql) || http://www.quest.com/toad-for-mysql  || 
 
-
+<BR>
 = Eclipse Projects =
 
 The framework AlgoTrader consists of at lease two Eclipse Projects:
@@ -43,6 +53,153 @@ AlgoTraderLight has the following structure:
 || bin || Contains startup batch files ||
 || log || Contains log files ||
 || results || Contains files which are created (i.e. copy of retrieved HTML code) or imported (i.e. Tick Data) into the system ||
-|| mda || Contains UML Model and AndroMDA configuration / customization files ||
+|| mda || Contains UML Model and AndroMDA configuration / customization files (available at a later stage, when AndroMDA is setup)||
 || sql || Contains SQL scripts ||
 || doc || Contains documentation in Text-File Format ||
+
+The Strategy Project AlgoTraderXXX has the following structure:
+
+|| *Directory* || *Description* ||
+|| src || Contains manually created source files ||
+|| lib || Contains Jar libraries specifically needed by the strategy||
+|| bin || Contains startup batch files ||
+|| log || Contains log files ||
+|| results || Contains mainly Tick Data Files ||
+
+<BR>
+= UML Model =
+
+The UML Model in use by the system is shown within [http://cep-trader.googlecode.com/files/AlgoTrader.pdf AlgoTrader UML Model]
+
+= Java Packages =
+
+The following table gives an overview of the provided java packages:
+
+|| *Package* || *Description* ||
+|| com.algoTrader || ServiceLocators ||
+|| com.algoTrader.entity || Entities and corresponding Hibernate DataAccessObjects ||
+|| com.algoTrader.service || Contains all Services. Broker specific implementation services are placed in sub-packages ||
+|| com.algoTrader.starter || Startup-Classes as well as a generic ServiceInvoker ||
+|| com.algoTrader.subscriber || Esper Statement Subscribers ||
+|| com.algoTrader.util || General Utility methods ||
+|| com.algoTrader.util.io || CSV Adapters for Tick data as well as Tick data conversion functions ||
+|| com.espertech.* || Modified Esper Classes ||
+
+<BR>
+= Esper Engine =
+
+Individual Esper service engines exist inside the trading framework as well as within the strategies. 
+
+Each of these can contain several modules. Modules specified with in the column Modules of the Table Strategy, are loaded automatically on startup.
+
+Each strategy also contains its own Esper configuration file named esper-xxx.cfg.xml. These configuration files define settings like:
+
+ * Event Types
+ * Auto Import Classes & Packages
+ * Custom Aggregation Functions
+ * Variables
+ * General Engine Settings
+
+Esper Listeners and Subscribers are configured inside the modules using the following syntax:
+
+{{{
+@Name('REBALANCE_PORTFOLIO')
+@Priority(2)
+@Tag(name='listeners', value='com.algoTrader.listener.RebalancePortfolioListener')
+select * from …
+}}}
+
+Listeners or Subscribers which correspond to a particular Service are commonly implemented as an inner class of the Service.
+
+== Trading Framework Modules ==
+
+The Trading Framework contains only one module called module-base.epl. It contains Esper Statements to fulfill the following tasks:
+
+ * Evaluation and Logging of the Portfolio Values at certain intervals
+ * Position handling (i.e. close position when exit level is reached, etc.)
+ * Evaluation of Performance Parameters (i.e. Sharpe Ratio, Calmar Ratio, Volatility, Draw-Down, etc.)
+ * Margining
+
+== Strategy Modules ==
+
+Strategies are completely free in the definition of their Esper Statements. Examples of Statements used by strategies are:
+
+ * Creation of technical indicators (i.e. Moving 
+ * Average, Stochastic, MACD, etc.)
+ * Creation of trade signals
+ * Trend evaluation
+ * Open / Close / Increase / Reduce Positions
+ * Set Exit Values
+ * Roll Positions (i.e. for Options and Futures)
+
+= Database =
+
+As described earlier the database MySql is used by the system, even though by using Hibernate, any supported database could be used.
+ 
+To ensure referential integrity, foreign-key constraints are in place. The directory sql /AlgoTraderLight contains a script algotrader.sql to create the database.
+
+= Tick Data Format = 
+
+The Format of the Tick Data Files in use is based on a standard CSV Structure:
+
+ * dateTime
+ * last
+ * lastDateTime
+ * volBid
+ * volAsk
+ * bid
+ * ask
+ * vol
+ * openIntrest
+ * settlement
+
+The first line within the file is the header row. DateTime and LastDateTime are of type long and represent milliseconds since 1970. 
+
+Example:
+
+|| dateTime || last || lastDateTime || volBid || volAsk || bid || ask || vol || openIntrest || settlement ||
+|| 1299493621002 || 188 || 1299491709000 || 47 || 52 || 178.1 || 183.2 || 20 || 868 || 187  ||
+|| 1299493680524 || 188 || 1299491709000 || 47 || 52 || 177.2 || 182.9 || 20 || 868 || 187 || 
+
+<BR>
+= Configuration  = 
+
+Configuration is done using the [http://commons.apache.org/configuration Apache Commons Configuration Library].  For the trading framework as well as for each strategy one configuration file exists. The file conf-base.properties is the configuration file for the trading framework. It contains configuration values for the following areas:
+
+ * Dabase Access
+ * Simulation Parameters
+ * Execution Parameters
+ * Broker specific Parameters 
+
+Using {{{org.apache.commons.configuration.CompositeConfiguration}}} configuration parameters can also be provided as a VM argument when starting up the system.
+
+The configuration files are also used to define values for Esper variables. Because the Esper Variable system is strong typed, variables have to be configured within the corresponding Esper configuration files.
+
+= Back Testing =
+
+The System can be run in Back Testing / Simulation mode by setting the following parameter inside the file conf-base.properties or as a VM argument:
+
+{{{simulation = true}}}
+
+In simulation mode the trading framework as well as all strategies marked as autoActivate in the database table strategy are started inside the same JVM.
+
+The symboles specified within the table watchers2watchlist are fed to the Esper engine instances using the {{{com.espertech.esperio.AdapterCoordinatorImpl}} and {{{com.espertech.esperio.csv.CSVInputAdapter}}}. The CSV files containing the relevant tickdata should be placed in a subdirectory of {{{/AlgoTraderXXX/results/tickdata/}}}. This subdirectory has to be specified in the file conf-base.properties or as a VM argument as follows:
+
+{{{dataSource.dataSet = current}}}
+
+During simulation all Esper engine instances are set to use external timing. The AdapterCoordinator is responsible to create the necessary CurrentTimeEvents and send them to the Esper engine instances.
+
+All orders are carried out in a simulated mode using the actual market prices supplied by the tick data.
+At the end of each simulation, simulation results like the following are displayed:
+
+{{{
+execution time (min): 1.38 
+dataSet: current 
+netLiqValue: 1'152'940.16 
+month-year:          Mai-10  Jun-10  Jul-10  Aug-10  Sep-10  Okt-10  
+monthlyPerformance:  -5.40%  -0.30%  -6.77%   1.68%  11.76%  13.09%  
+n=6 avgM=2.34% stdM=8.42% avgY=28.13% stdY=29.17% sharpRatio=0.959 
+maxDrawDownM=6.77% bestMonthlyPerformance=13.09% maxDrawDown=24.84% maxDrawDownPeriod=140.00days colmarRatio=1.13
+}}}
+
+Before each simulation run, the database is reset to its original state. After the simulation the database modifications (mainly transactions and positions) are kept, in order to be able to perform further DB based analysis.
