@@ -1,0 +1,31 @@
+#summary Generic TA-Lib Integration (over 200 indicators)
+
+[http://ta-lib.org/ TA-Lib] can be used to perform technical analysis of financial market data.
+
+ * Includes 200 indicators such as ADX, MACD, RSI, Stochastic, Bollinger Bands etc... (more info)
+ * Candlestick pattern recognition
+
+Through this Generic AggregateFunction all TA-Lib 
+
+To use the AggregateFunction add the following to the esper configuration 
+
+{{{
+<plugin-aggregation-function name="talib" function-class="com.algoTrader.util.GenericTALibFunction"/>
+}}}
+ 
+The AggregationFunction can be used in an esper statement like this: 
+
+{{{
+select talib("stochF", high, low, close, 3, 2, "Sma")
+from OHLCBar;
+}}}
+ 
+If the TA-Lib Function returns just one value, the value is directly exposed by the AggregationFunction. If the TA-Lib Function returns multiple-values, they will be exposed by a Map 
+
+The AggregationFunction needs the following libraries: 
+
+ * [http://commons.apache.org/collections Apache Commons Collection]
+ * [http://larvalabs.com/collections Commons Generics] 
+ * [http://ta-lib.org/ TA-Lib]
+
+The source code of the GenericTALibFunction can be found here: [http://code.google.com/p/cep-trader/source/browse/trunk/AlgoTraderLight/src/com/algoTrader/util/GenericTALibFunction.java GenericTALibFunction.java]
