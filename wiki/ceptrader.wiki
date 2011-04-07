@@ -1,0 +1,10 @@
+#summary One-sentence summary of this page.
+
+= Introduction =
+
+CEP Trader IB Interface
+
+
+= Details =
+
+Current CEP trader code base takes IB data and has it pumped into Esper through POJOs. These POJOs are transformed into generic event POJOs. These are used to compute new strategies. These are pumped into the IB.
