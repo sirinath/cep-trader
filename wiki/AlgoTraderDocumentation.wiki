@@ -154,6 +154,7 @@ A strategy is based on the following minimum artifacts:
 || /beanRefFactorySimulation.xml || Spring Bean Reference Factory containing references to all Application Context Files ||
 || /applicationContext-mov.xml || Application Context File for the strategy, mainly containing autowire instructions ||
 || /results/tickdata/xxx || Directory containing Tick Data Files needed for Back Testing ||
+|| DB table strategy || A record for the strategy ||
 
 == MovServiceImpl.java ==
 
@@ -305,6 +306,20 @@ Note: the actual values for the variables are taken from conf-mov.properties.
 
 The variable engineStrategy gets populated automatically by the RuleService and contains a reference to the Strategy-Entity we are using.
 
+== DB table strategy ==
+
+For this new Strategy we also need an entry in the DB table strategy with the following values:
+
+|| *NAME* || *FAMILY* || *AUTO_ACTIVATE* || *ALLOCATION* || *MODULES* ||
+|| MOV || MOV || true || 1.00 || mov-main ||
+
+NAME and FAMILY are both set to the name of our strategy. 
+
+AUTO_ACTIVATE means, that the strategy will be automatically run in simulation mode. By using this field, you can run several strategies in parallel to see how the interact.
+
+ALLOCATION is the percentage of total assets, that will be allocated to this strategy. NOTE: the total of all allocations will need to add up to 100%. Example: If only 50% is allocated to our Strategy MOV, the reminder of 50% need to be allocated to the "BASE" strategy, which represents the trading framework itself.
+
+NOTE:  The same strategy (eclipse project) can be run with different parameters (i.e. conf-mov1.properties & conf-mov2.properties). In this case NAME will be defined as MOV1 & MOV2 and FAMILY will be defined as MOV.
 
 = Back Testing =
 
