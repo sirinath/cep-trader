@@ -1,42 +1,26 @@
 package com.ceptrader.generic.esper.pojoevents;
 
-
-public class SellMkt implements DataItem {
-	private static final long	serialVersionUID	= 1L;
-	private int	              ref;
-	private String	          ticker;
-	private long	          timeStamp;
-	private int	              size;
-	private String	          goodUntil;
+public class Order {
+	public static enum Side {
+		BUY, SELL, SHORT
+	};
 	
-	private String	          goodAfter;
-	private String	          orderType;
-	private String	          group;
-	private int	              parent	         = 0;
-	private double	          touch	             = 0;
+	private Side	 side;
 	
-	public SellMkt(
-	        final int ref,
-	        final String ticker,
-	        final int size,
-	        final String goodUntil) {
-		this.ref = ref;
-		this.ticker = ticker;
-		this.size = size;
-		this.goodUntil = goodUntil;
-	}
+	protected int	 ref;
+	protected String	ticker;
+	protected long	 timeStamp;
+	protected int	 size;
 	
-	public SellMkt(
-	        final int ref,
-	        final String ticker,
-	        final long timeStamp,
-	        final int size,
-	        final String goodUntil) {
-		this.ref = ref;
-		this.ticker = ticker;
-		this.timeStamp = timeStamp;
-		this.size = size;
-		this.goodUntil = goodUntil;
+	protected String	goodUntil;
+	private String	 goodAfter;
+	private String	 orderType;
+	private String	 group;
+	private int	     parent	= 0;
+	private double	 touch	= 0;
+	
+	public Order() {
+		super();
 	}
 	
 	public void setTicker(final String ticker) {
@@ -118,4 +102,13 @@ public class SellMkt implements DataItem {
 	public double getTouch() {
 		return touch;
 	}
+	
+	protected void setSide(final Side side) {
+		this.side = side;
+	}
+	
+	public Side getSide() {
+		return side;
+	}
+	
 }
