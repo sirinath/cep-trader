@@ -5,11 +5,12 @@ import java.util.Vector;
 
 import org.apache.commons.beanutils.MethodUtils;
 
-import com.ceptrader.generic.drools.pojoevents.BuyStop;
-import com.ceptrader.generic.drools.pojoevents.SellLmt;
-import com.ceptrader.generic.drools.pojoevents.SellMkt;
-import com.ceptrader.generic.drools.pojoevents.SellStop;
-import com.ceptrader.generic.drools.pojoevents.TriggeredOrder;
+import com.ceptrader.generic.esper.pojoevents.BuyMkt;
+import com.ceptrader.generic.esper.pojoevents.BuyStop;
+import com.ceptrader.generic.esper.pojoevents.SellLmt;
+import com.ceptrader.generic.esper.pojoevents.SellMkt;
+import com.ceptrader.generic.esper.pojoevents.SellStop;
+import com.ceptrader.generic.esper.pojoevents.TriggeredOrder;
 import com.ceptrader.util.BasicUtils;
 import com.ib.client.ComboLeg;
 import com.ib.client.Contract;
@@ -211,7 +212,7 @@ public class IBUtils {
 	}
 	
 	public static Order getLongMkt(
-	        final com.ceptrader.generic.drools.pojoevents.Order ord) {
+	        final BuyMkt ord) {
 		return IBUtils.getOrder("BUY", ord.getOrderType(), ord.getSize(),
 		        0, 0, 100, false,
 		        ord.getParent(), 0, ord.getTouch(), ord.getGoodAfter(),
