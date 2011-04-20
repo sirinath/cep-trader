@@ -87,7 +87,23 @@ The following table gives an overview of the provided java packages:
 || com.algoTrader.util || General Utility methods ||
 || com.algoTrader.util.io || CSV Adapters for Tick data as well as Tick data conversion functions ||
 
-<BR>
+The application contains the following POJO-Entities:
+ * Tick
+ * Security
+ * SecurityFamily (containing Security  Metadata)
+ * Transaction
+ * Position
+ * Strategy
+ * WatchListItem
+
+The following SOA-Services provide the functionality of the system:
+ * TickService (handling CSV-Files as well as Watchlist)
+ * TransactionService(handling Orders and Executions)
+ * PositionService (handling positions, Stop-Losses and Margin)
+ * RuleService (Esper engine abstraction)
+ * SimulationService (coordination of BackTesting)
+ * LookupService (general lookup functionality)
+
 = Esper Engine =
 
 Individual Esper service engines exist inside the trading framework as well as within the strategies. 
@@ -436,3 +452,20 @@ Configuration is done using the [http://commons.apache.org/configuration Apache 
 Using {{{org.apache.commons.configuration.CompositeConfiguration}}} configuration parameters can also be provided as a VM argument when starting up the system.
 
 The configuration files are also used to define values for Esper variables. Because the Esper Variable system is strong typed, variables have to be configured within the corresponding Esper configuration files.
+
+= Additional functionality of the proprietary full framework =
+The AlgoTraderLight framework contains just the very basic core of the proprietary framework. The proprietary full Framework contains additional features in the following ares. 
+
+ * Currency and Forex Handling (incl. Forex-Hedge and Rebalance)
+ * Interest Rate and Dividend Handling
+ * Modeled functionality of the share classes: Stocks, Bonds, Inrest Rate, Forex, Future & Stock Option
+ * Stock Option and Future Pricing Engines (for Backtesting of Option and Future Based Strategies)
+ * Runtime-Client using JMX & Swing (based on JConsole)
+ * Historical Data Retrieval
+ * Generic Broker Adapter
+ * Rebalancing between Strategies
+ * Separation of framework and strategies into separate VM’s (using RMI and Esper-Socket)
+ * Automatic Parameter Optimization of Trading Strategies
+ * Risk Management Features (Max Margin, Trailing Stop-Loss, Max Loss, Overnight CVaR, Max Leverage, Max monthly Draw-Down)
+
+At a later time additional contributions in these areas are possible.
