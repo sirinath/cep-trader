@@ -34,6 +34,8 @@ For development of new Strategies the following minimum Platform requirements ex
 || *Software* || *URL* ||
 || Eclipse IDE || http://www.eclipse.org ||
 || Subversive SVN Client ||  http://www.eclipse.org/subversive ||
+|| M2 Eclipse || http://m2eclipse.sonatype.org/sites/m2e/ || 
+|| M2 Subversive || http://www.polarion.org/projects/subversive/download/integrations/update-site/ ||
 || MySql Database || http://www.mysql.com ||
 || A database management tool (i.e. TOAD for MySql) || http://www.quest.com/toad-for-mysql  || 
 
@@ -42,22 +44,21 @@ For development of new Strategies the following minimum Platform requirements ex
 
 The framework AlgoTrader consists of at least two Eclipse Projects:
 
- * AlgoTraderLight (the base trading framework)
- * AlgoTraderXXX (the strategy being developed)
+ * AlgoTraderLight (the main project)
+ * AlgoTraderLight-code (contains all java code)
+ * AlgoTraderLight-mda (contains the UML Model and code generator)
+ * AlgoTraderXXX (the strategy beeing developped)
 
 AlgoTraderLight has the following structure:
 
 || *Directory* || *Description* ||
-|| src || Contains manually created source files ||
-|| target || Contains generated source files ||
-|| classes || Contains compiled class files ||
-|| lib || Contains Jar libraries ||
-|| bin || Contains startup batch files ||
-|| log || Contains log files ||
-|| results || Contains files which are created (i.e. copy of retrieved HTML code) or imported (i.e. Tick Data) into the system ||
-|| mda || Contains UML Model and AndroMDA configuration / customization files||
+|| code/src || Contains manually created source files ||
+|| code/target || Contains generated source files ||
+|| code/results || Contains files which are created (i.e. copy of retrieved HTML code) or imported (i.e. Tick Data) into the system ||
+|| code/log || Contains log files ||
+|| mda/src || Contains UML Model and AndroMDA configuration / customization files||
+|| mda/conf || Contains configuration files for the generator||
 || sql || Contains SQL scripts ||
-|| doc || Contains documentation in Text-File Format ||
 
 The Strategy Project AlgoTraderXXX has the following structure:
 
@@ -71,7 +72,7 @@ The Strategy Project AlgoTraderXXX has the following structure:
 <BR>
 = UML Model =
 
-The UML Model in use by the system is shown here: [http://cep-trader.googlecode.com/files/AlgoTrader.pdf AlgoTrader UML Model]
+The UML Model in use by the system is shown here: [http://cep-trader.googlecode.com/files/AlgoTrader%20UML%20Model.pdf UML Model]
 
 = Java Packages =
 
@@ -138,6 +139,55 @@ Strategies are completely free in the definition of their Esper Statements. Exam
 As described earlier the database MySql is used by the system, even though by using Hibernate, any supported database could be used.
  
 To ensure referential integrity, foreign-key constraints are in place. The directory sql /AlgoTraderLight contains a script algotrader.sql to create the database.
+
+= Installation =
+
+== Subversion Checkout ==
+The AlgoTrader Framework as well as one simple Example Strategy can be downloaded from: 
+
+ * Base Framework: https://cep-trader.googlecode.com/svn/trunk/AlgoTraderLight
+ * Example Strategy: https://cep-trader.googlecode.com/svn/trunk/AlgoTraderMov
+
+It is recommended to use the Plugin M2Eclipse for this checkout (Import / Maven / Existing Maven Project). This will create the following 4 projects in Eclipse:
+
+ * AlgoTraderLight
+ * AlgoTraderLight-code
+ * AlgoTraderLight-mda
+ * AlgoTraderMov
+
+== Patch AndroMDA ==
+Because of a bug in the latest AndroMDA Core Release (3.4-SNAPSHOT) the file 
+
+[file:<user-home>\.m2\repository\org\andromda\andromda-core\3.4-SNAPSHOT\andromda-core-3.4-SNAPSHOT.jar]
+
+in the local Maven Repository has to be replaced with this one:
+
+[http://cep-trader.googlecode.com/files/andromda-core-3.4-SNAPSHOT.jar]
+
+== Generate the code ==
+run mvn install inside the AlgoTrader-mda project. This will generate all necessary code into AlgoTrader-code target directory.
+
+== Install MySql ==
+Install latest MySql from [http://www.mysql.com/downloads/mysql/ MySql]
+ * create a schema named AlgoTrader
+ * run the create-script: sql/algotrader.sql
+ * configure the properties dataSource.user & dataSource.password inside src/conf-base.properties:
+
+
+== Start the Demo Strategy ==
+Run the class com.algoTrader.starter.SimulationStarter inside the project AlgoTraderMov. 
+This class is part of AlgoTraderLight, but it has to be executed from AlgoTraderMov.
+(the projet AlgoTraderMov has a dependency to AlgoTraderLight for this purpose)
+
+If using Eclipse specify the following in the Launch Configuration:
+
+Main-Tab:
+ * Project: AlgoTraderMov
+ * Main Class: com.algoTrader.starter.SimulationStarter
+ 
+Arguments-Tab / VM-Arguments: 
+ * -Dsimulation=true
+ * -DdataSource.dataSet=1year 
 
 = Strategy Development =
 
