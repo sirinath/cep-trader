@@ -38,6 +38,7 @@ For development of new Strategies the following minimum Platform requirements ex
 || M2 Subversive || http://www.polarion.org/projects/subversive/download/integrations/update-site/ ||
 || MySql Database || http://www.mysql.com ||
 || A database management tool (i.e. TOAD for MySql) || http://www.quest.com/toad-for-mysql  || 
+|| MagicDraw UML || http://nomagic.be/files95/MD_UML_95_sp1_CE_win.exe ||
 
 <BR>
 = Eclipse Projects =
@@ -415,6 +416,14 @@ maxDrawDownM=6.77% bestMonthlyPerformance=13.09% maxDrawDown=24.84% maxDrawDownP
 }}}
 
 Before each simulation run, the database is reset to its original state. After the simulation the database modifications (mainly transactions and positions) are kept, in order to be able to perform further DB based analysis.
+
+= UML Modelling and Code Generation =
+
+Much of the system is modelled in UML. It is recommended to use MagicDraw for modelling.
+
+To get familiar with the Code Generator AndroMDA the following 2 tutorials give a good overview:
+ * http://www.andromda.org/docs/andromda-documentation/getting-started-java/index.html
+ * http://www.andromda.org/docs/andromda-cartridges/andromda-spring-cartridge/howto.html
 
 = Tick Data Format = 
 
