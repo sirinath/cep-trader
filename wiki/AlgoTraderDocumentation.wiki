@@ -172,15 +172,6 @@ It is recommended to use the Plugin M2Eclipse for this checkout (Import / Maven 
  * AlgoTraderLight-mda
  * AlgoTraderMov
 
-== Patch AndroMDA ==
-Because of a bug in the latest AndroMDA Core Release (3.4-SNAPSHOT) the file 
-
-[file:<user-home>\.m2\repository\org\andromda\andromda-core\3.4-SNAPSHOT\andromda-core-3.4-SNAPSHOT.jar]
-
-in the local Maven Repository has to be replaced with this one:
-
-[http://cep-trader.googlecode.com/files/andromda-core-3.4-SNAPSHOT.jar]
-
 == Generate the code ==
 run mvn install inside the AlgoTrader-mda project. This will generate all necessary code into AlgoTrader-code target directory.
 
