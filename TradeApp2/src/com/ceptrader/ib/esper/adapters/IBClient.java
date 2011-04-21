@@ -2,8 +2,46 @@ package com.ceptrader.ib.esper.adapters;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Properties;
 
+import com.ceptrader.esper.CEPMan;
+import com.ceptrader.ib.drools.pojoevents.request.CalculateImpliedVolatility;
+import com.ceptrader.ib.drools.pojoevents.request.CalculateOptionPrice;
+import com.ceptrader.ib.drools.pojoevents.request.CancelCalculateImpliedVolatility;
+import com.ceptrader.ib.drools.pojoevents.request.CancelCalculateOptionPrice;
+import com.ceptrader.ib.drools.pojoevents.request.CancelFundamentalData;
+import com.ceptrader.ib.drools.pojoevents.request.CancelHistoricalData;
+import com.ceptrader.ib.drools.pojoevents.request.CancelMktData;
+import com.ceptrader.ib.drools.pojoevents.request.CancelMktDepth;
+import com.ceptrader.ib.drools.pojoevents.request.CancelNewsBulletins;
+import com.ceptrader.ib.drools.pojoevents.request.CancelOrder;
+import com.ceptrader.ib.drools.pojoevents.request.CancelRealTimeBars;
+import com.ceptrader.ib.drools.pojoevents.request.CancelScannerSubscription;
+import com.ceptrader.ib.drools.pojoevents.request.EConnect;
+import com.ceptrader.ib.drools.pojoevents.request.EDisconnect;
+import com.ceptrader.ib.drools.pojoevents.request.ExerciseOptions;
+import com.ceptrader.ib.drools.pojoevents.request.PlaceOrder;
+import com.ceptrader.ib.drools.pojoevents.request.ReplaceFA;
+import com.ceptrader.ib.drools.pojoevents.request.ReqAccountUpdates;
+import com.ceptrader.ib.drools.pojoevents.request.ReqAllOpenOrders;
+import com.ceptrader.ib.drools.pojoevents.request.ReqAutoOpenOrders;
+import com.ceptrader.ib.drools.pojoevents.request.ReqContractDetails;
+import com.ceptrader.ib.drools.pojoevents.request.ReqCurrentTime;
+import com.ceptrader.ib.drools.pojoevents.request.ReqExecutions;
+import com.ceptrader.ib.drools.pojoevents.request.ReqFundamentalData;
+import com.ceptrader.ib.drools.pojoevents.request.ReqHistoricalData;
+import com.ceptrader.ib.drools.pojoevents.request.ReqIds;
+import com.ceptrader.ib.drools.pojoevents.request.ReqManagedAccts;
+import com.ceptrader.ib.drools.pojoevents.request.ReqMktData;
+import com.ceptrader.ib.drools.pojoevents.request.ReqMktDepth;
+import com.ceptrader.ib.drools.pojoevents.request.ReqNewsBulletins;
+import com.ceptrader.ib.drools.pojoevents.request.ReqOpenOrders;
+import com.ceptrader.ib.drools.pojoevents.request.ReqRealTimeBars;
+import com.ceptrader.ib.drools.pojoevents.request.ReqScannerParameters;
+import com.ceptrader.ib.drools.pojoevents.request.ReqScannerSubscription;
+import com.ceptrader.ib.drools.pojoevents.request.RequestFA;
 import com.ceptrader.util.Logger;
 import com.ib.client.Contract;
 import com.ib.client.EClientSocket;
@@ -14,9 +52,21 @@ import com.ib.client.Order;
 import com.ib.client.ScannerSubscription;
 
 public class IBClient extends EClientSocket {
+	static {
+		final Properties p = new Properties();
+		try {
+			p.load(IBClient.class.getResourceAsStream("/IBClient.properties"));
+			
+			IBClient.host = p.getProperty("host", null);
+			IBClient.port = Integer.parseInt(p.getProperty("port", "7496"));
+		} catch (final IOException e) {
+			Logger.log(e);
+		}
+	}
+	
 	private static int	     clientId	= 0;
-	private static String	 host	  = null;
-	private static int	     port	  = 7496; // 7496; 4001;
+	private static String	 host;
+	private static int	     port;	         // 7496; 4001;
 	private static IBClient	 ibc;
 	private static IBAdapter	ibAdp;
 	
@@ -58,13 +108,6 @@ public class IBClient extends EClientSocket {
 		}
 	}
 	
-	public static class CalculateImpliedVolatility {
-		public int		reqId;
-		public Contract	contract;
-		public double	optionPrice;
-		public double	underPrice;
-	}
-	
 	@Override
 	public synchronized void calculateImpliedVolatility(final int reqId,
 	        final Contract contract, final double optionPrice,
@@ -79,14 +122,7 @@ public class IBClient extends EClientSocket {
 		o.optionPrice = optionPrice;
 		o.underPrice = underPrice;
 		
-		Logger.log(o);
-	}
-	
-	public static class CalculateOptionPrice {
-		public int		reqId;
-		public Contract	contract;
-		public double	volatility;
-		public double	underPrice;
+		process(o);
 	}
 	
 	@Override
@@ -102,11 +138,7 @@ public class IBClient extends EClientSocket {
 		o.volatility = volatility;
 		o.underPrice = underPrice;
 		
-		Logger.log(o);
-	}
-	
-	public static class CancelCalculateImpliedVolatility {
-		public int	reqId;
+		process(o);
 	}
 	
 	@Override
@@ -117,11 +149,7 @@ public class IBClient extends EClientSocket {
 		
 		o.reqId = reqId;
 		
-		Logger.log(o);
-	}
-	
-	public static class CancelCalculateOptionPrice {
-		public int	reqId;
+		process(o);
 	}
 	
 	@Override
@@ -132,11 +160,7 @@ public class IBClient extends EClientSocket {
 		
 		o.reqId = reqId;
 		
-		Logger.log(o);
-	}
-	
-	public static class CancelFundamentalData {
-		public int	reqId;
+		process(o);
 	}
 	
 	@Override
@@ -147,11 +171,7 @@ public class IBClient extends EClientSocket {
 		
 		o.reqId = reqId;
 		
-		Logger.log(o);
-	}
-	
-	public static class CancelHistoricalData {
-		public int	tickerId;
+		process(o);
 	}
 	
 	@Override
@@ -161,11 +181,7 @@ public class IBClient extends EClientSocket {
 		final CancelHistoricalData o = new CancelHistoricalData();
 		o.tickerId = tickerId;
 		
-		Logger.log(o);
-	}
-	
-	public static class CancelMktData {
-		public int	tickerId;
+		process(o);
 	}
 	
 	@Override
@@ -175,11 +191,7 @@ public class IBClient extends EClientSocket {
 		final CancelMktData o = new CancelMktData();
 		o.tickerId = tickerId;
 		
-		Logger.log(o);
-	}
-	
-	public static class CancelMktDepth {
-		public int	tickerId;
+		process(o);
 	}
 	
 	@Override
@@ -189,10 +201,7 @@ public class IBClient extends EClientSocket {
 		final CancelMktDepth o = new CancelMktDepth();
 		o.tickerId = tickerId;
 		
-		Logger.log(o);
-	}
-	
-	public static class CancelNewsBulletins {
+		process(o);
 	}
 	
 	@Override
@@ -201,11 +210,7 @@ public class IBClient extends EClientSocket {
 		
 		final CancelNewsBulletins o = new CancelNewsBulletins();
 		
-		Logger.log(o);
-	}
-	
-	public static class CancelOrder {
-		public int	id;
+		process(o);
 	}
 	
 	@Override
@@ -216,11 +221,7 @@ public class IBClient extends EClientSocket {
 		
 		o.id = id;
 		
-		Logger.log(o);
-	}
-	
-	public static class CancelRealTimeBars {
-		public int	tickerId;
+		process(o);
 	}
 	
 	@Override
@@ -231,11 +232,7 @@ public class IBClient extends EClientSocket {
 		
 		o.tickerId = tickerId;
 		
-		Logger.log(o);
-	}
-	
-	public static class CancelScannerSubscription {
-		public int	tickerId;
+		process(o);
 	}
 	
 	@Override
@@ -245,7 +242,7 @@ public class IBClient extends EClientSocket {
 		final CancelScannerSubscription o = new CancelScannerSubscription();
 		o.tickerId = tickerId;
 		
-		Logger.log(o);
+		process(o);
 	}
 	
 	@Override
@@ -258,26 +255,36 @@ public class IBClient extends EClientSocket {
 	public synchronized void eConnect(final Socket socket, final int clientId)
 	        throws IOException {
 		super.eConnect(socket, clientId);
+		
+		final EConnect o = new EConnect();
+		final InetAddress inetAdd = socket.getInetAddress();
+		o.host = inetAdd.getHostName();
+		o.port = socket.getPort();
+		o.clientId = clientId;
+		
+		process(o);
 	}
 	
 	@Override
 	public synchronized void eConnect(final String host, final int port,
 	        final int clientId) {
 		super.eConnect(host, port, clientId);
+		
+		final EConnect o = new EConnect();
+		o.host = host;
+		o.port = port;
+		o.clientId = clientId;
+		
+		process(o);
 	}
 	
 	@Override
 	public synchronized void eDisconnect() {
 		super.eDisconnect();
-	}
-	
-	public static class ExerciseOptions {
-		public int		tickerId;
-		public Contract	contract;
-		public int		exerciseAction;
-		public int		exerciseQuantity;
-		public String	account;
-		public int		override;
+		
+		final EDisconnect o = new EDisconnect();
+		
+		process(o);
 	}
 	
 	@Override
@@ -298,13 +305,7 @@ public class IBClient extends EClientSocket {
 		o.account = account;
 		o.override = override;
 		
-		Logger.log(o);
-	}
-	
-	public static class PlaceOrder {
-		public int		id;
-		public Contract	contract;
-		public Order	order;
+		process(o);
 	}
 	
 	@Override
@@ -317,17 +318,12 @@ public class IBClient extends EClientSocket {
 		o.contract = contract;
 		o.order = order;
 		
-		Logger.log(o);
+		process(o);
 	}
 	
 	@Override
 	public boolean isConnected() {
 		return super.isConnected();
-	}
-	
-	public static class ReplaceFA {
-		public int		faDataType;
-		public String	xml;
 	}
 	
 	@Override
@@ -338,12 +334,7 @@ public class IBClient extends EClientSocket {
 		o.faDataType = faDataType;
 		o.xml = xml;
 		
-		Logger.log(o);
-	}
-	
-	public static class ReqAccountUpdates {
-		public boolean	subscribe;
-		public String	acctCode;
+		process(o);
 	}
 	
 	@Override
@@ -355,10 +346,7 @@ public class IBClient extends EClientSocket {
 		o.subscribe = subscribe;
 		o.acctCode = acctCode;
 		
-		Logger.log(o);
-	}
-	
-	public static class ReqAllOpenOrders {
+		process(o);
 	}
 	
 	@Override
@@ -367,16 +355,12 @@ public class IBClient extends EClientSocket {
 		
 		final ReqAllOpenOrders o = new ReqAllOpenOrders();
 		
-		Logger.log(o);
+		process(o);
 	}
 	
 	@Override
 	public EReader reader() {
 		return super.reader();
-	}
-	
-	public static class ReqAutoOpenOrders {
-		public boolean	bAutoBind;
 	}
 	
 	@Override
@@ -386,12 +370,7 @@ public class IBClient extends EClientSocket {
 		final ReqAutoOpenOrders o = new ReqAutoOpenOrders();
 		o.bAutoBind = bAutoBind;
 		
-		Logger.log(o);
-	}
-	
-	public static class ReqContractDetails {
-		public int		reqId;
-		public Contract	contract;
+		process(o);
 	}
 	
 	@Override
@@ -403,10 +382,7 @@ public class IBClient extends EClientSocket {
 		o.reqId = reqId;
 		o.contract = contract;
 		
-		Logger.log(o);
-	}
-	
-	public static class ReqCurrentTime {
+		process(o);
 	}
 	
 	@Override
@@ -415,12 +391,7 @@ public class IBClient extends EClientSocket {
 		
 		final ReqCurrentTime o = new ReqCurrentTime();
 		
-		Logger.log(o);
-	}
-	
-	public static class ReqExecutions {
-		public int		       reqId;
-		public ExecutionFilter	filter;
+		process(o);
 	}
 	
 	@Override
@@ -432,13 +403,7 @@ public class IBClient extends EClientSocket {
 		o.reqId = reqId;
 		o.filter = filter;
 		
-		Logger.log(o);
-	}
-	
-	public static class ReqFundamentalData {
-		public int		reqId;
-		public Contract	contract;
-		public String	reportType;
+		process(o);
 	}
 	
 	@Override
@@ -452,18 +417,7 @@ public class IBClient extends EClientSocket {
 		o.contract = contract;
 		o.reportType = reportType;
 		
-		Logger.log(o);
-	}
-	
-	public static class ReqHistoricalData {
-		public int		tickerId;
-		public Contract	contract;
-		public String	endDateTime;
-		public String	durationStr;
-		public String	barSizeSetting;
-		public String	whatToShow;
-		public int		useRTH;
-		public int		formatDate;
+		process(o);
 	}
 	
 	@Override
@@ -485,11 +439,7 @@ public class IBClient extends EClientSocket {
 		o.useRTH = useRTH;
 		o.formatDate = formatDate;
 		
-		Logger.log(o);
-	}
-	
-	public static class ReqIds {
-		public int	numIds;
+		process(o);
 	}
 	
 	@Override
@@ -499,10 +449,7 @@ public class IBClient extends EClientSocket {
 		final ReqIds o = new ReqIds();
 		o.numIds = numIds;
 		
-		Logger.log(o);
-	}
-	
-	public static class ReqManagedAccts {
+		process(o);
 	}
 	
 	@Override
@@ -511,14 +458,7 @@ public class IBClient extends EClientSocket {
 		
 		final ReqManagedAccts o = new ReqManagedAccts();
 		
-		Logger.log(o);
-	}
-	
-	public static class ReqMktData {
-		public int		tickerId;
-		public Contract	contract;
-		public String	genericTickList;
-		public boolean	snapshot;
+		process(o);
 	}
 	
 	@Override
@@ -533,13 +473,7 @@ public class IBClient extends EClientSocket {
 		o.genericTickList = genericTickList;
 		o.snapshot = snapshot;
 		
-		Logger.log(o);
-	}
-	
-	public static class ReqMktDepth {
-		public int		tickerId;
-		public Contract	contract;
-		public int		numRows;
+		process(o);
 	}
 	
 	@Override
@@ -553,11 +487,7 @@ public class IBClient extends EClientSocket {
 		o.contract = contract;
 		o.numRows = numRows;
 		
-		Logger.log(o);
-	}
-	
-	public static class ReqNewsBulletins {
-		public boolean	allMsgs;
+		process(o);
 	}
 	
 	@Override
@@ -567,10 +497,7 @@ public class IBClient extends EClientSocket {
 		final ReqNewsBulletins o = new ReqNewsBulletins();
 		o.allMsgs = allMsgs;
 		
-		Logger.log(o);
-	}
-	
-	public static class ReqOpenOrders {
+		process(o);
 	}
 	
 	@Override
@@ -579,15 +506,7 @@ public class IBClient extends EClientSocket {
 		
 		final ReqOpenOrders o = new ReqOpenOrders();
 		
-		Logger.log(o);
-	}
-	
-	public static class ReqRealTimeBars {
-		public int		tickerId;
-		public Contract	contract;
-		public int		barSize;
-		public String	whatToShow;
-		public boolean	useRTH;
+		process(o);
 	}
 	
 	@Override
@@ -603,10 +522,7 @@ public class IBClient extends EClientSocket {
 		o.whatToShow = whatToShow;
 		o.useRTH = useRTH;
 		
-		Logger.log(o);
-	}
-	
-	public static class ReqScannerParameters {
+		process(o);
 	}
 	
 	@Override
@@ -615,12 +531,7 @@ public class IBClient extends EClientSocket {
 		
 		final ReqScannerParameters o = new ReqScannerParameters();
 		
-		Logger.log(o);
-	}
-	
-	public static class ReqScannerSubscription {
-		public int		           tickerId;
-		public ScannerSubscription	subscription;
+		process(o);
 	}
 	
 	@Override
@@ -632,11 +543,7 @@ public class IBClient extends EClientSocket {
 		o.tickerId = tickerId;
 		o.subscription = subscription;
 		
-		Logger.log(o);
-	}
-	
-	public static class RequestFA {
-		public int	faDataType;
+		process(o);
 	}
 	
 	@Override
@@ -646,7 +553,7 @@ public class IBClient extends EClientSocket {
 		final RequestFA o = new RequestFA();
 		o.faDataType = faDataType;
 		
-		Logger.log(o);
+		process(o);
 	}
 	
 	@Override
@@ -656,5 +563,11 @@ public class IBClient extends EClientSocket {
 	
 	public static int getClientid() {
 		return IBClient.clientId;
+	}
+	
+	public <T> void process(final T o) {
+		CEPMan.getCEPMan().pumpEvent(o);
+		
+		Logger.log(o);
 	}
 }
