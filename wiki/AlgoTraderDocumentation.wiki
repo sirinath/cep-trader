@@ -160,16 +160,17 @@ To ensure referential integrity, foreign-key constraints are in place. The direc
 = Installation =
 
 == Subversion Checkout ==
-The AlgoTrader Framework as well as one simple Example Strategy can be downloaded from: 
 
- * Base Framework: https://cep-trader.googlecode.com/svn/trunk/AlgoTraderLight
- * Example Strategy: https://cep-trader.googlecode.com/svn/trunk/AlgoTraderMov
+It is recommended to use the Plugin M2Eclipse for this checkout (Import / Maven / Check out Maven Projects from SCM). 
 
-It is recommended to use the Plugin M2Eclipse for this checkout (Import / Maven / Existing Maven Project). This will create the following 4 projects in Eclipse:
+Select https://cep-trader.googlecode.com/svn/trunk/AlgoTraderLight. This will create the following 3 projects in Eclipse:
 
  * AlgoTraderLight
  * AlgoTraderLight-code
  * AlgoTraderLight-mda
+
+Run the import again and select https://cep-trader.googlecode.com/svn/trunk/AlgoTraderMov. This will create the following additional project in Eclipse:
+
  * AlgoTraderMov
 
 == Generate the code ==
