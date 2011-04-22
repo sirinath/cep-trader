@@ -176,6 +176,13 @@ Run the import again and select https://cep-trader.googlecode.com/svn/trunk/Algo
 == Generate the code ==
 run mvn install inside the AlgoTrader-mda project. This will generate all necessary code into AlgoTrader-code target directory.
 
+You might have to fix the following class manually, as the generator will produce an error (bug-fix is been worked on):
+
+* com.algoTrader.entity.marketData.TickDaoBase
+
+== Compile ==
+run mvn install inside the AlgoTrader-code project. This will compile all class-files and install the jar-files into the local repository
+
 == Install MySql ==
 Install latest MySql from [http://www.mysql.com/downloads/mysql/ MySql]
  * create a schema named AlgoTrader
