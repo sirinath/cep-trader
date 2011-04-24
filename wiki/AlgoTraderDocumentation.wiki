@@ -178,7 +178,7 @@ run mvn install inside the AlgoTrader-mda project. This will generate all necess
 
 You might have to fix the following class manually, as the generator will produce an error (bug-fix is been worked on):
 
-* com.algoTrader.entity.marketData.TickDaoBase
+ * com.algoTrader.entity.marketData.TickDaoBase (remove erroneous import om.algoTrader.entity.TickImpl)
 
 == Compile ==
 run mvn install inside the AlgoTrader-code project. This will compile all class-files and install the jar-files into the local repository
@@ -418,11 +418,15 @@ Before each simulation run, the database is reset to its original state. After t
 
 = UML Modelling and Code Generation =
 
-Much of the system is modelled in UML. It is recommended to use MagicDraw for modelling.
+Much of the system is modelled in UML. It is recommended to use MagicDraw for modelling (see [AlgoTraderDocumentation#Platform_requirements Platform_requirements])
 
 To get familiar with the Code Generator AndroMDA the following 2 tutorials give a good overview:
  * http://www.andromda.org/docs/andromda-documentation/getting-started-java/index.html
  * http://www.andromda.org/docs/andromda-cartridges/andromda-spring-cartridge/howto.html
+
+The actual UML Model is defined in the following xmi file:
+
+ * /algotraderlight-mda/src/main/uml/algoTrader.xmi
 
 = Tick Data Format = 
 
