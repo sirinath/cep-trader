@@ -38,7 +38,7 @@ For development of new Strategies the following minimum Platform requirements ex
 || M2 Subversive || http://www.polarion.org/projects/subversive/download/integrations/update-site/ ||
 || MySql Database || http://www.mysql.com ||
 || A database management tool (i.e. TOAD for MySql) || http://www.quest.com/toad-for-mysql  || 
-|| MagicDraw UML || http://nomagic.be/files95/MD_UML_95_sp1_CE_win.exe ||
+|| MagicDraw UML || http://nomagic.be/files95 (use MD_UML_95_sp1_CE... for your plattform) ||
 
 <BR>
 = Eclipse Projects =
