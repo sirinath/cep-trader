@@ -181,7 +181,6 @@ run mvn install inside the AlgoTrader-code project. This will compile all class-
 
 == Install MySql ==
 Install latest MySql from [http://www.mysql.com/downloads/mysql/ MySql]
- * create a schema named AlgoTrader
  * run the create-script: sql/algotrader.sql
  * configure the properties dataSource.user & dataSource.password inside src/conf-base.properties:
 
@@ -423,6 +422,8 @@ To get familiar with the Code Generator AndroMDA the following 2 tutorials give 
 The actual UML Model is defined in the following xmi file:
 
  * /algotraderlight-mda/src/main/uml/algoTrader.xmi
+
+When opening the file algoTrader.xmi for the first time, the location of the Maven 2 Repository has to be defined. This is usualy in <home>/.m2/repository. 
 
 = Tick Data Format = 
 
