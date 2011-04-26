@@ -462,8 +462,8 @@ Using {{{org.apache.commons.configuration.CompositeConfiguration}}} configuratio
 
 The configuration files are also used to define values for Esper variables. Because the Esper Variable system is strong typed, variables have to be configured within the corresponding Esper configuration files.
 
-= Additional functionality of the proprietary full framework =
-The AlgoTraderLight framework contains just the very basic core of the proprietary framework. The proprietary full Framework contains additional features in the following ares. 
+= Additional functionality of the AlgoTrader Full Version =
+The AlgoTraderLight framework contains just the very basic core of the proprietary framework. The proprietary Full Version of the Framework used by Rialto Capital Inc. contains additional features in the following ares. 
 
  * Currency and Forex Handling (incl. Forex-Hedge and Rebalance)
  * Interest Rate and Dividend Handling
@@ -477,4 +477,4 @@ The AlgoTraderLight framework contains just the very basic core of the proprieta
  * Automatic Parameter Optimization of Trading Strategies
  * Risk Management Features (Max Margin, Trailing Stop-Loss, Max Loss, Overnight CVaR, Max Leverage, Max monthly Draw-Down)
 
-At a later time additional contributions in these areas are possible.
+At a later time additional contributions in these areas to the Open Source Version of the framework are possible.
