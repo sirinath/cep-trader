@@ -1,4 +1,4 @@
-#summary Overall Documentation of the Framework AlgoTrader as well as instructions on how to build a strategy with it
+#summary Overall Documentation of the Framework algotrader as well as instructions on how to build a strategy with it
 
 <wiki:toc max_depth="2" />
 
@@ -8,7 +8,7 @@ The Trading Framework AlgoTrader facilitates a minimum effort development of tra
 
 After backtesting, newly developed strategies can be tested in a live environment using Paper Trading Accounts. At the end of a thorough test procedure, the new strategy can be put into production. The following diagram shows the general procedure for developing new strategies:
 
-http://cep-trader.googlecode.com/files/AlgoTrader-Strategy_Development_Process.gif
+http://cep-trader.googlecode.com/files/algotrader-Strategy_Development_Process.gif
 
 The system is developed by a Model Driven Architecture. All artifacts of the system are modeled in UML and generated into code by the [http://www.andromda.org/docs/index.html Framework AndroMDA].
 The system does not provide a GUI Frontend. Instead it uses Java Management Extension (JMX) for management in runtime.
@@ -25,13 +25,14 @@ The Trading Framework layer is the base for all strategies running on top of it.
 
 On top of the Trading Framework any number of Strategies can be installed. Each strategy runs in its own process. Each Strategy contains its own Esper Engine Instance. A Strategy can use any type and number of Technical Indicators to evaluate trend and to retrieve market signals. Orders are delegated to the underlying Trading Framework for execution.
 
-http://cep-trader.googlecode.com/files/AlgoTrader-Architecture_Layers.gif
+http://cep-trader.googlecode.com/files/algotrader-Architecture_Layers.gif
 
 = Platform requirements =
 
 For development of new Strategies the following minimum Platform requirements exist:
 
 || *Software* || *URL* ||
+|| Java 1.6 || http://www.oracle.com/technetwork/java/javase/downloads/index.html ||
 || Eclipse IDE || http://www.eclipse.org ||
 || Subversive SVN Client ||  http://www.eclipse.org/subversive ||
 || M2 Eclipse || http://m2eclipse.sonatype.org/sites/m2e/ || 
@@ -43,14 +44,14 @@ For development of new Strategies the following minimum Platform requirements ex
 <BR>
 = Eclipse Projects =
 
-The framework AlgoTrader consists of at least two Eclipse Projects:
+The Framework AlgoTrader consists of at least two Eclipse Projects:
 
- * AlgoTraderLight (the main project)
- * AlgoTraderLight-code (contains all java code)
- * AlgoTraderLight-mda (contains the UML Model and code generator)
- * AlgoTraderXXX (the strategy beeing developped)
+ * algotraderlight (the main project)
+ * algotraderlight-code (contains all java code)
+ * algotraderlight-mda (contains the UML Model and code generator)
+ * algotraderlight-xxx (the strategy beeing developped)
 
-AlgoTraderLight has the following structure:
+algotraderlight has the following structure:
 
 || *Directory* || *Description* ||
 || code/src || Contains manually created source files ||
@@ -61,7 +62,7 @@ AlgoTraderLight has the following structure:
 || mda/conf || Contains configuration files for the generator||
 || sql || Contains SQL scripts ||
 
-The Strategy Project AlgoTraderXXX has the following structure:
+The Strategy Project algotrader-xxx has the following structure:
 
 || *Directory* || *Description* ||
 || src || Contains manually created source files ||
@@ -73,7 +74,7 @@ The Strategy Project AlgoTraderXXX has the following structure:
 <BR>
 = UML Model =
 
-The UML Model in use by the system is shown here: [http://cep-trader.googlecode.com/files/AlgoTrader%20UML%20Model.pdf UML Model]
+The UML Model in use by the system is shown here: [http://cep-trader.googlecode.com/files/algotrader%20UML%20Model.pdf UML Model]
 
 = Java Packages =
 
@@ -155,7 +156,7 @@ Strategies are completely free in the definition of their Esper Statements. Exam
 
 As described earlier the database MySql is used by the system, even though by using Hibernate, any supported database could be used.
  
-To ensure referential integrity, foreign-key constraints are in place. The directory sql /AlgoTraderLight contains a script algotrader.sql to create the database.
+To ensure referential integrity, foreign-key constraints are in place. The directory algotraderlight/sql contains a script algotrader.sql to create the database.
 
 = Installation =
 
@@ -165,19 +166,21 @@ It is recommended to use the Plugin M2Eclipse for this checkout (Import / Maven 
 
 Select https://cep-trader.googlecode.com/svn/trunk/AlgoTraderLight. This will create the following 3 projects in Eclipse:
 
- * AlgoTraderLight
- * AlgoTraderLight-code
- * AlgoTraderLight-mda
+ * algotraderlight
+ * algotraderlight-code
+ * algotraderlight-mda
 
 Run the import again and select https://cep-trader.googlecode.com/svn/trunk/AlgoTraderMov. This will create the following additional project in Eclipse:
 
- * AlgoTraderMov
+ * algotrader-mov
 
 == Generate the code ==
-run mvn install inside the AlgoTrader-mda project. This will generate all necessary code into AlgoTrader-code target directory.
+Right click on the project algotraderlight-mda / Run As / Maven install. This will generate all necessary code into algotrader-code target directory.
 
 == Compile ==
-run mvn install inside the AlgoTrader-code project. This will compile all class-files and install the jar-files into the local repository
+Now refresh all projects. Eclipse will compile all java code automatically. 
+
+Before this is done, please check the Java Build Path of algotraderlight-code project. There are two sources configured. The source folder target/src/main/java might have an Exclude defined (Star-Star), which needs to be removed.
 
 == Install MySql ==
 Install latest MySql from [http://www.mysql.com/downloads/mysql/ MySql]
@@ -186,14 +189,14 @@ Install latest MySql from [http://www.mysql.com/downloads/mysql/ MySql]
 
 
 == Start the Demo Strategy ==
-Run the class com.algoTrader.starter.SimulationStarter inside the project AlgoTraderMov. 
-This class is part of AlgoTraderLight, but it has to be executed from AlgoTraderMov.
-(the projet AlgoTraderMov has a dependency to AlgoTraderLight for this purpose)
+Run the class com.algoTrader.starter.SimulationStarter inside the project algotrader-mov. 
+This class is part of algotraderlight, but it has to be executed from algotrader-mov.
+(the projet algotraderlight-mov has a dependency to algotraderlight for this purpose)
 
 If using Eclipse specify the following in the Launch Configuration:
 
 Main-Tab:
- * Project: AlgoTraderMov
+ * Project: algotrader-mov
  * Main Class: com.algoTrader.starter.SimulationStarter
  
 Arguments-Tab / VM-Arguments: 
@@ -390,7 +393,7 @@ The System can be run in Back Testing / Simulation mode by setting the following
 
 In simulation mode the trading framework as well as all strategies marked as autoActivate (in the database table strategy) are started inside the same JVM.
 
-The symboles specified within the table watchers2watchlist are fed to the Esper engine instances using the {{{com.espertech.esperio.AdapterCoordinatorImpl}}} and {{{com.espertech.esperio.csv.CSVInputAdapter}}}. The CSV files containing the relevant tickdata should be placed in a subdirectory of {{{/AlgoTraderXXX/results/tickdata/}}}. This subdirectory has to be specified in the file conf-base.properties or as a VM argument as follows:
+The symboles specified within the table watchers2watchlist are fed to the Esper engine instances using the {{{com.espertech.esperio.AdapterCoordinatorImpl}}} and {{{com.espertech.esperio.csv.CSVInputAdapter}}}. The CSV files containing the relevant tickdata should be placed in a subdirectory of {{{/algotrader-xxx/results/tickdata/}}}. This subdirectory has to be specified in the file conf-base.properties or as a VM argument as follows:
 
 {{{dataSource.dataSet = current}}}
 
@@ -413,7 +416,7 @@ Before each simulation run, the database is reset to its original state. After t
 
 = UML Modelling and Code Generation =
 
-Much of the system is modelled in UML. It is recommended to use MagicDraw for modelling (see [AlgoTraderDocumentation#Platform_requirements Platform_requirements])
+Much of the system is modelled in UML. It is recommended to use MagicDraw for modelling (see [algotraderDocumentation#Platform_requirements Platform_requirements])
 
 To get familiar with the Code Generator AndroMDA the following 2 tutorials give a good overview:
  * http://www.andromda.org/docs/andromda-documentation/getting-started-java/index.html
@@ -421,9 +424,11 @@ To get familiar with the Code Generator AndroMDA the following 2 tutorials give 
 
 The actual UML Model is defined in the following xmi file:
 
- * /algotraderlight-mda/src/main/uml/algoTrader.xmi
+ * /algotraderlight-mda/src/main/uml/algotrader.xmi
 
-When opening the file algoTrader.xmi for the first time, the location of the Maven 2 Repository has to be defined. This is usualy in <home>/.m2/repository. 
+When opening the file algotrader.xmi for the first time, the location of the Maven 2 Repository has to be defined. This is usualy in user-home-directory/.m2/repository.  
+
+Also sometimes the path to the UML-Standard-Profile has to be defined. This file lies in the profiles sub directory of the MagicDraw Installation directory.
 
 = Tick Data Format = 
 
@@ -463,7 +468,7 @@ Using {{{org.apache.commons.configuration.CompositeConfiguration}}} configuratio
 The configuration files are also used to define values for Esper variables. Because the Esper Variable system is strong typed, variables have to be configured within the corresponding Esper configuration files.
 
 = Additional functionality of the AlgoTrader used In House by Rialto Capital Inc =
-The AlgoTraderLight framework contains just the very basic core of the framework used by Rialto Capital Inc and generously contributed to this project through Andy Flury. The in house trading system contains additional features in the following ares. 
+The algotraderlight framework contains just the very basic core of the framework used by Rialto Capital Inc and generously contributed to this project through Andy Flury. The in house trading system contains additional features in the following ares. 
 
  * Currency and Forex Handling (incl. Forex-Hedge and Rebalance)
  * Interest Rate and Dividend Handling
