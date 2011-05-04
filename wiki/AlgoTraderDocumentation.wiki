@@ -8,7 +8,7 @@ The Trading Framework AlgoTrader facilitates a minimum effort development of tra
 
 After backtesting, newly developed strategies can be tested in a live environment using Paper Trading Accounts. At the end of a thorough test procedure, the new strategy can be put into production. The following diagram shows the general procedure for developing new strategies:
 
-http://cep-trader.googlecode.com/files/algotrader-Strategy_Development_Process.gif
+[http://cep-trader.googlecode.com/files/AlgoTrader-Strategy_Development_Process.gif]
 
 The system is developed by a Model Driven Architecture. All artifacts of the system are modeled in UML and generated into code by the [http://www.andromda.org/docs/index.html Framework AndroMDA].
 The system does not provide a GUI Frontend. Instead it uses Java Management Extension (JMX) for management in runtime.
@@ -44,7 +44,7 @@ For development of new Strategies the following minimum Platform requirements ex
 <BR>
 = Eclipse Projects =
 
-The Framework AlgoTrader consists of at least two Eclipse Projects:
+The Framework AlgoTrader consists of at least 4 Eclipse Projects:
 
  * algotraderlight (the main project)
  * algotraderlight-code (contains all java code)
@@ -276,7 +276,7 @@ public void openPosition(String strategyName, int securityId, BigDecimal current
 
   this.transactionService.executeTransaction(strategy.getName(), order);
 	
- // if a position was open and exitValue
+ // if a position was open set an exitValue
   Position position = this.lookupService.getPositionBySecurityAndStrategy(securityId, 
     strategyName);
 
@@ -379,23 +379,40 @@ For this new Strategy we also need an entry in the DB table strategy with the fo
 
 NAME and FAMILY are both set to the name of our strategy. 
 
-AUTO_ACTIVATE means, that the strategy will be automatically run in simulation mode. By using this field, you can run several strategies in parallel to see how the interact.
+AUTO_ACTIVATE means, that the strategy will be automatically run in simulation mode. By using this field, you can run several strategies in parallel to see how they interact.
 
 ALLOCATION is the percentage of total assets, that will be allocated to this strategy. NOTE: the total of all allocations will need to add up to 100%. Example: If only 50% is allocated to our Strategy MOV, the reminder of 50% need to be allocated to the "BASE" strategy, which represents the trading framework itself.
 
 NOTE:  The same strategy (eclipse project) can be run with different parameters (i.e. conf-mov1.properties & conf-mov2.properties). In this case NAME will be defined as MOV1 & MOV2 and FAMILY will be defined as MOV.
 
-= Back Testing =
+= Back Testing / Simulation =
 
-The System can be run in Back Testing / Simulation mode by setting the following parameter inside the file conf-base.properties or as a VM argument:
+The System can be run in Back Testing / Simulation mode by running the class com.algoTrader.starter.SimulationStarter inside the strategy project algotrader-xxx. 
+This class is part of algotraderlight, but it has to be executed from the strategy project algotrader-xxx.
 
-{{{simulation = true}}}
+If using Eclipse specify the following in the Launch Configuration:
+
+Main-Tab:
+ * Project: algotrader-xxx
+ * Main Class: com.algoTrader.starter.SimulationStarter
+ 
+Arguments-Tab / VM-Arguments: 
+ * -Dsimulation=true
+ * -DdataSource.dataSet=yyy 
 
 In simulation mode the trading framework as well as all strategies marked as autoActivate (in the database table strategy) are started inside the same JVM.
 
-The symboles specified within the table watchers2watchlist are fed to the Esper engine instances using the {{{com.espertech.esperio.AdapterCoordinatorImpl}}} and {{{com.espertech.esperio.csv.CSVInputAdapter}}}. The CSV files containing the relevant tickdata should be placed in a subdirectory of {{{/algotrader-xxx/results/tickdata/}}}. This subdirectory has to be specified in the file conf-base.properties or as a VM argument as follows:
+Securities specified within the table watch_list_item are fed to the corresponding Esper engine instances. The field persistent has the following meaning:
 
-{{{dataSource.dataSet = current}}}
+ * persistent = true: these securities will always be delivered to the strategy (i.e. for S&P500)
+ * persistent = false: these are securities requested by a strategy for a specific duration of time (i.e. Options on S&P500). When restarting the simulation, these have to be requested again.
+
+The CSV files containing the relevant tickdata should be placed in a subdirectory of {{{/algotrader-xxx/results/tickdata/}}}. This subdirectory has to be specified in the file conf-base.properties or as a VM argument as follows:
+
+{{{dataSource.dataSet = current}}} 
+(this will pick CSV files from the directory {{{/algotrader-xxx/results/tickdata/current}}})
+
+The name of the CSV-File has to be according to the defined isin in the table security: isin-of-security.csv
 
 During simulation all Esper engine instances are set to use external timing. The AdapterCoordinator is responsible to create the necessary CurrentTimeEvents and send them to the Esper engine instances.
 
@@ -453,7 +470,13 @@ Example:
 || 1299493621002 || 188 || 1299491709000 || 47 || 52 || 178.1 || 183.2 || 20 || 868 || 187  ||
 || 1299493680524 || 188 || 1299491709000 || 47 || 52 || 177.2 || 182.9 || 20 || 868 || 187 || 
 
-<BR>
+Again, the name of the CSV-File has to be according to the defined isin in the table security: isin-of-security.csv
+
+If external provided Tickdata uses other time formats (i.e. DDMMYYY-hhmmss), these should be converted to milliseconds before using with AlgoTrader. 
+
+The following Excel  Add-In is provided to convert Excel-Date to milliseconds (and the other way):
+[http://cep-trader.googlecode.com/files/DateTime-Functions.xla Functions.xla]
+
 = Configuration  = 
 
 Configuration is done using the [http://commons.apache.org/configuration Apache Commons Configuration Library].  For the trading framework as well as for each strategy one configuration file exists. The file conf-base.properties is the configuration file for the trading framework. It contains configuration values for the following areas:
@@ -467,6 +490,23 @@ Using {{{org.apache.commons.configuration.CompositeConfiguration}}} configuratio
 
 The configuration files are also used to define values for Esper variables. Because the Esper Variable system is strong typed, variables have to be configured within the corresponding Esper configuration files.
 
+= Strategy vs. Strategy Family =
+
+Using AlgoTrader it is possible to run multiple instances of the same Strategy at the same time with different parameters. For this purpose, the following concepts have to be distinguished:
+
+Strategy (Family):
+ * represented by one Maven/Eclipse Project containing Spring-Services and Esper-Modules
+ * is defined in the table 'strategy' using the field 'family'.
+
+Strategy (Instance):
+ * represents one instance of the Strategy Family
+ * contains one independent Esper Service Instance
+ * runs in its own JVM process in production mode
+ * has it's own config files (esper-xxx.cfg.xml and conf-xxx.properties)
+ * is defined in the table 'strategy' using the field 'name'.
+
+Entities of type Position and Transaction always belong to one Strategy Instance. Even when running multiple Strategy Instances at once, it is therefor possible to exact performance figures of each one of them.
+
 = Additional functionality of the AlgoTrader used In House by Rialto Capital Inc =
 The algotraderlight framework contains just the very basic core of the framework used by Rialto Capital Inc and generously contributed to this project through Andy Flury. The in house trading system contains additional features in the following ares. 
 
@@ -476,7 +516,7 @@ The algotraderlight framework contains just the very basic core of the framework
  * Stock Option and Future Pricing Engines (for Backtesting of Option and Future Based Strategies)
  * Runtime-Client using JMX & Swing (based on JConsole)
  * Historical Data Retrieval
- * Generic Broker Adapter
+ * Interactive Brokers specific Execution Algo
  * Rebalancing between Strategies
  * Separation of framework and strategies into separate VM’s (using RMI and Esper-Socket)
  * Automatic Parameter Optimization of Trading Strategies
