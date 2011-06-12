@@ -5,6 +5,7 @@ Copyright (C) 2011 -  by Suminda S. S. Dharmasena (Project Owner), All rights re
 The purpose of this agreement is to grant, by the Licensor, to the Licensee of a non-exclusive, transferable and worldwide license effective from the day of acceptance over the entire term of protection of the economic rights of the software.
 
 It is here granted:
+
 1. The right to use and deal with the software 
 
 2. The right to create adaptations and derived works of the software provide
