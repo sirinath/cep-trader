@@ -1,43 +1,71 @@
-= License =
+= License - CEP Trader License V1 =
 
 Copyright (C) 2011 -  by Suminda S. S. Dharmasena (Project Owner), All rights reserved.
 
 The purpose of this agreement is to grant, by the Licensor, to the Licensee of a non-exclusive, transferable and worldwide license effective from the day of acceptance over the entire term of protection of the economic rights of the software.
 
 It is here granted:
- 1. The right to use and deal with the software without limitation of the field of application
- 2. The right to create adaptations and derived works of the software provide
- 2.1. A notice is place by the author including, distinctive identification of the author, description of adaptation and the date and time the creation
- 2.2. World wide assignment the adaptation and derived works to the Project Owner to the maximum extent possible under applicable law
- 2.3. Assignment of any patents covering the adaptation and / or derived works
- 2.4. Assignment of any patents required in dealing with or required in the use of the adaptation and / or derived works
- 2.5. Make available the derived works and adaptation all available forms including but no limited to source code, object code, output, etc. under the terms of this license
- 2.6. Make available the artifacts created to aid the adaptation or derivation, including but not limited to, project plans on creating the adaptation and / or derivation, models aiding the adaptation and / or derivation, documentation aiding the adaptation and / or derivation,  etc.
- 3. Use of patents owned by the licensor in using the software
- 4. The right to distribute the accompanying software and documentation, adaptation and derived works, under the terms of this license or subsequent revisions provided condition of section 2 and its sub clauses are explicitly met
- 4.1. The right to sub license the accompanying software and documentation, adaptation and derived works, provided condition of section 2 and its sub clauses are explicitly met in the new license
+1. The right to use and deal with the software 
+
+2. The right to create adaptations and derived works of the software provide
+ 
+2.1. A notice is place by the author including, distinctive identification of the author, description of adaptation and the date and time the creation
+ 
+2.2. World wide assignment the adaptation and derived works to the Project Owner to the maximum extent possible under applicable law
+
+2.3. Assignment of any patents covering the adaptation and / or derived works
+
+2.4. Assignment of any patents required in dealing with or required in the use of the adaptation and / or derived works
+
+2.5. Make available the derived works and adaptation all available forms including but no limited to source code, object code, output, etc. under the terms of this license
+
+2.6. Make available, under current license, the artifacts created to aid the adaptation or derivation, including but not limited to, project repository, project plans on creating the adaptation and / or derivation, models aiding the adaptation and / or derivation, documentation aiding the adaptation and / or derivation,  etc. on request, through reasonable means
+
+2.7. Make available, under current license, the artifacts created to aid the adaptation or derivation, including but not limited to, project repository, project plans on creating the adaptation and / or derivation, models aiding the adaptation and / or derivation, documentation aiding the adaptation and / or derivation,  etc. to users of the software
+
+3. Use of patents owned by the licensor in using the software
+
+4. The right to distribute the work, adaptation and derived works, under the terms of this license or subsequent revisions provided condition of section 2 and its sub clauses are explicitly met
+
+4.1. The right to sub license the work, adaptation and derived works, provided terms, condition and rights set forth in this agreement are also met in the new license
+
+4.2. The right to sub license substantial adaptation and derived works, under the term of GPL V2 or subsequent revisions hereof, CeCILL V1 or subsequent revisions hereof, AGPL V2 or subsequent revisions hereof, MPL V1 or subsequent revisions hereof, EPL V1 or subsequent revisions hereof, CDDL V1 or subsequent revisions hereof, provided the resulting work derives from the current work and another 3rd party work which is licensed under the above mentioned licenses, and the work in reference and the license was obtained at arms length through a non related 3rd parties
+
+4.3. The right to sub license the quantum of work resulting in a substantial adaptation and derived works, in all forms including but not limited to plug-ins, components, dynamic link libraries, under the terms of LGPL V2 or subsequent revisions hereof, CeCILL-C V1 or subsequent revisions hereof, MPL V1 or subsequent revisions hereof, EPL V1 or subsequent revisions hereof, CDDL V1 or subsequent revisions hereof, provided the there is substantial extension to the prior work; the quantum of work remain distinctively separable artifacts in all form of the work with exception of memory image and / or process in execution; and the licensing of the quantum of work is at arms length to a non related 3rd party. 
+
+4.4. The right to sub license the work, substantial adaptation and derived works, by substantial contributors with contribution merged to the, under the term of GPL V2 or subsequent revisions hereof, AGPL V2 or subsequent revisions hereof, LGPL V2 or subsequent revisions hereof, CeCILL V1 or subsequent revisions hereof, CeCILL-C V1 or subsequent revisions hereof, MPL V1 or subsequent revisions hereof, EPL V1 or subsequent revisions hereof, CDDL V1 or subsequent revisions hereof, provided that such contribution is inseparable from the final work, in all forms, and all fields of application and use, and such contribution is not in the form, including but not limited to, plug-ins, optional libraries, optional connected components, add-ons, skins, etc.
+
+4.5. The right to sub license the work, substantial adaptation and derived works, by substantial contributors with contribution merged to the original data repository owned by the project owner, under the term of GPL V2 or subsequent revisions hereof, AGPL V2 or subsequent revisions hereof, LGPL V2 or subsequent revisions hereof, CeCILL V1 or subsequent revisions hereof, CeCILL-C V1 or subsequent revisions hereof, MPL V1 or subsequent revisions hereof, EPL V1 or subsequent revisions hereof, CDDL V1 or subsequent revisions hereof.
+
+
+
 
  
  
 = Acceptance =
 
- 5. The license is deemed accepted as a whole on:
- 5.1. Loading the Software by any or all means, notably, by downloading from a remote server, or by loading from a physical medium;
- 5.2. The first time the Licensee exercises any of the rights granted.
- 5.3. On contributing including but not limited to committing to repository containing the software, forking the software
+5. The license is deemed accepted as a whole on:
+
+5.1. Loading the Software by any or all means, notably, by downloading from a remote server, or by loading from a physical medium;
+
+5.2. The first time the Licensee exercises any of the rights granted.
+
+5.3. On contributing including but not limited to committing to repository containing the software, forking the software
 
  
  
 = Related Services =
 
- 6. Under no circumstances shall the Agreement oblige the Licensor to provide technical assistance or maintenance services for the Software.
- 6.1. How ever such services and warranties can be offered by the Licensor with terms and conditions set forth in a separate instrument.
+6. Under no circumstances shall the Agreement oblige the Licensor to provide technical assistance or maintenance services for the Software.
+
+6.1. How ever such services and warranties can be offered by the Licensor with terms and conditions set forth in a separate instrument.
 
  
  
 = Liability =
 
 7.1 Subject to the provisions of Article 7.2, the Licensee shall be entitled to claim compensation for any direct loss it may have suffered from the Software as a result of a fault on the part of the relevant Licensor, subject to providing evidence thereof.
+
 7.2 The Licensor's liability is limited to the commitments made under this Agreement and shall not be incurred as a result of in particular: (i) loss due the Licensee's total or partial failure to fulfill its obligations, (ii) direct or consequential loss that is suffered by the Licensee due to the use or performance of the Software, and (iii) more generally, any consequential loss. In particular the Parties expressly agree that any or all pecuniary or business loss (i.e. loss of data, loss of profits, operating loss, loss of customers or orders, opportunity cost, any disturbance to business activities) or any or all legal proceedings instituted against the Licensee by a third party, shall constitute consequential loss and shall not provide entitlement to any or all compensation from the Licensor.
 
 
@@ -73,3 +101,11 @@ Neither Party shall be liable for any or all delay, or failure to perform the Ag
 10.3 The Agreement cancels and replaces any or all previous agreements, whether written or oral, between the Parties and having the same purpose, and constitutes the entirety of the agreement between said Parties concerning said purpose. No supplement or modification to the terms and conditions hereof shall be effective as between the Parties unless it is made in writing and signed by their duly authorized representatives.
 
 10.4 In the event that one or more of the provisions hereof were to conflict with a current or future applicable act or legislative text, said act or legislative text shall prevail, and the Parties shall make the necessary amendments so as to comply with said act or legislative text. All other provisions shall remain effective. Similarly, invalidity of a provision of the Agreement, for any reason whatsoever, shall not cause the Agreement as a whole to be invalid.
+
+= New Versions of the Agreement =
+
+12.1 Any person is authorized to duplicate and distribute copies of this Agreement.
+
+12.2 So as to ensure coherence, the wording of this Agreement is protected and may only be modified by the authors of the License, who reserve the right to periodically publish updates or new versions of the Agreement, each with a separate number. These subsequent versions may address new issues encountered by Free Software.
+
+12.3 Any Software distributed under a given version of the Agreement may only be subsequently distributed under the same version of the Agreement or a subsequent version, subject to the provisions of Article 4 and sub clauses.
